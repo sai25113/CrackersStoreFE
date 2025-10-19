@@ -707,6 +707,252 @@
 
 // export default SpinWheel;
 
+// import React, { useState, useEffect } from "react";
+// import { Wheel } from "react-custom-roulette";
+
+// import { Button, Spinner, Form } from "react-bootstrap";
+
+// const SpinWheel = () => {
+// 	const [mode, setMode] = useState("withoutCoupon"); // 'withCoupon' or 'withoutCoupon'
+// 	const [rewards, setRewards] = useState([]);
+// 	const [mustSpin, setMustSpin] = useState(false);
+// 	const [prizeNumber, setPrizeNumber] = useState(0);
+// 	const [loading, setLoading] = useState(false);
+// 	const [selectedReward, setSelectedReward] = useState(null);
+// 	const [finalAmount, setFinalAmount] = useState("");
+// 	const [allRewards, setAllRewards] = useState([]); // full reward objects
+// 	const [wheelRewards, setWheelRewards] = useState([]); // filtered rewards for wheel
+
+// 	// 💾 Save final amount + reward to backend
+// 	const handleSave = async () => {
+// 		if (!finalAmount || !selectedReward) {
+// 			alert("Please spin and enter the final amount first!");
+// 			return;
+// 		}
+// 		try {
+// 			const API_URL = import.meta.env.VITE_API_URL;
+// 			const res = await fetch(`${API_URL}/saveResult`, {
+// 				method: "POST",
+// 				headers: { "Content-Type": "application/json" },
+// 				body: JSON.stringify({
+// 					mode,
+// 					reward: selectedReward,
+// 					amount: parseFloat(finalAmount),
+// 				}),
+// 			});
+
+// 			const data = await res.json();
+// 			console.log("data: ", data);
+// 			// alert(data.message || "Result saved successfully!");
+// 			setFinalAmount("");
+// 		} catch (err) {
+// 			console.error("Error saving result:", err);
+// 			alert("Failed to save result!");
+// 		}
+// 	};
+
+// 	// 🔄 Fetch rewards from backend when mode changes
+// 	const fetchRewards = async () => {
+// 		try {
+// 			setLoading(true);
+// 			const API_URL = import.meta.env.VITE_API_URL;
+// 			const response = await fetch(`${API_URL}/rewards?mode=${mode}`);
+// 			const data = await response.json();
+// 			console.log("data: ", data);
+
+// 			// expect: [{ name: "10% OFF" }, { name: "Free 1 Box" }]
+// 			setAllRewards(data); // keep full reward objects
+
+// 			setRewards(data.map((r) => r.name));
+// 			setLoading(false);
+// 		} catch (err) {
+// 			console.error("Error fetching rewards:", err);
+// 			setLoading(false);
+// 			setRewards([]);
+// 			setAllRewards([]);
+// 		}
+// 	};
+
+// 	useEffect(() => {
+// 		fetchRewards();
+// 	}, [mode]);
+
+// 	// 🌀 Spin handler
+// 	// const handleSpin = () => {
+// 	// 	if (rewards.length === 0) return;
+// 	// 	// const randomIndex = Math.floor(Math.random() * rewards.length);
+// 	// 	// setPrizeNumber(randomIndex);
+// 	// 	// setMustSpin(true);
+// 	// 	// If any reward has price > 998, only spin from rewards <= 998
+// 	// 	const expensiveExists = allRewards.some((r) => r.price > 998);
+// 	// 	let spinPool = allRewards;
+
+// 	// 	if (expensiveExists) {
+// 	// 		spinPool = allRewards.filter((r) => r.price <= 998);
+// 	// 	}
+
+// 	// 	const randomIndex = Math.floor(Math.random() * spinPool.length);
+// 	// 	const selected = spinPool[randomIndex];
+
+// 	// 	setPrizeNumber(randomIndex);
+// 	// 	setMustSpin(true);
+// 	// 	setSelectedReward(selected.name);
+// 	// };
+
+// 	const handleSpin = () => {
+// 		if (allRewards.length === 0) return;
+
+// 		// Filter rewards for spinning
+// 		const expensiveExists = allRewards.some((r) => r.price > 998);
+// 		const spinPool = expensiveExists
+// 			? allRewards.filter((r) => r.price <= 998)
+// 			: allRewards;
+
+// 		setWheelRewards(spinPool); // update wheel data
+
+// 		const randomIndex = Math.floor(Math.random() * spinPool.length);
+// 		setPrizeNumber(randomIndex);
+// 		setMustSpin(true);
+// 		setSelectedReward(spinPool[randomIndex].name);
+// 	};
+
+// 	// 🎁 On stop spinning
+// 	const handleStopSpinning = () => {
+// 		setMustSpin(false);
+// 		setSelectedReward(rewards[prizeNumber]);
+// 		// alert(`🎉 You won: ${rewards[prizeNumber]}!`);
+// 	};
+
+// 	return (
+// 		<div className="d-flex flex-column align-items-center mt-4">
+// 			<h2 className="fw-bold mb-3">
+// 				<span role="img" aria-label="sparkles">
+// 					🎡
+// 				</span>{" "}
+// 				Spin & Win!
+// 			</h2>
+
+// 			{/* Mode Selector */}
+// 			<div className="mb-3">
+// 				<Form.Check
+// 					inline
+// 					label="Without Coupon"
+// 					type="radio"
+// 					id="withoutCoupon"
+// 					checked={mode === "withoutCoupon"}
+// 					onChange={() => setMode("withoutCoupon")}
+// 				/>
+// 				<Form.Check
+// 					inline
+// 					label="With Coupon"
+// 					type="radio"
+// 					id="withCoupon"
+// 					checked={mode === "withCoupon"}
+// 					onChange={() => setMode("withCoupon")}
+// 				/>
+// 			</div>
+
+// 			{/* Loading Spinner */}
+// 			{loading ? (
+// 				<Spinner animation="border" variant="primary" />
+// 			) : (
+// 				<>
+// 					{/* Roulette Wheel */}
+// 					<div style={{ position: "relative" }}>
+// 						{/* Pointer Arrow */}
+// 						<div
+// 							style={{
+// 								width: 0,
+// 								height: 0,
+// 								borderLeft: "10px solid transparent",
+// 								borderRight: "10px solid transparent",
+// 								borderBottom: "20px solid red",
+// 								position: "absolute",
+// 								top: "-25px",
+// 								left: "50%",
+// 								transform: "translateX(-50%)",
+// 								zIndex: 10,
+// 							}}
+// 						></div>
+
+// 						{/* <Wheel
+// 							mustStartSpinning={mustSpin}
+// 							prizeNumber={prizeNumber}
+// 							data={allRewards.map((reward) => ({ option: reward.name }))}
+// 							backgroundColors={["#f87171", "#fde047", "#4ade80", "#60a5fa"]}
+// 							textColors={["#000"]}
+// 							onStopSpinning={handleStopSpinning}
+// 							perpendicularText
+// 							spinDuration={0.5}
+// 							radiusLineColor="#f97316"
+// 							outerBorderColor="#f97316"
+// 							outerBorderWidth={8}
+// 						/>
+// 						 */}
+
+// 						<Wheel
+// 							mustStartSpinning={mustSpin}
+// 							prizeNumber={prizeNumber}
+// 							data={wheelRewards.map((r) => ({ option: r.name }))}
+// 							backgroundColors={["#f87171", "#fde047", "#4ade80", "#60a5fa"]}
+// 							textColors={["#000"]}
+// 							onStopSpinning={handleStopSpinning}
+// 							perpendicularText
+// 							spinDuration={0.5}
+// 							radiusLineColor="#f97316"
+// 							outerBorderColor="#f97316"
+// 							outerBorderWidth={8}
+// 						/>
+// 					</div>
+
+// 					{/* Spin Button */}
+// 					<Button
+// 						variant="primary"
+// 						className="mt-3"
+// 						onClick={handleSpin}
+// 						disabled={mustSpin || rewards.length === 0}
+// 					>
+// 						{mustSpin ? "Spinning..." : "Spin Now"}
+// 					</Button>
+
+// 					{/* Show Reward */}
+// 					{selectedReward && !mustSpin && (
+// 						// <div className="mt-3 alert alert-success text-center w-75">
+// 						// 	You won: <strong>{selectedReward}</strong> 🎉
+// 						// </div>
+// 						<div className="mt-4 text-center w-75">
+// 							<div className="alert alert-success">
+// 								You won: <strong>{selectedReward}</strong> 🎉
+// 							</div>
+
+// 							<Form.Group controlId="finalAmount" className="mt-3">
+// 								<Form.Label>Enter Final Amount</Form.Label>
+// 								<Form.Control
+// 									type="number"
+// 									placeholder="Enter amount"
+// 									value={finalAmount}
+// 									onChange={(e) => setFinalAmount(e.target.value)}
+// 								/>
+// 							</Form.Group>
+
+// 							<Button
+// 								variant="success"
+// 								className="mt-3"
+// 								onClick={handleSave}
+// 								disabled={!finalAmount}
+// 							>
+// 								Save Result
+// 							</Button>
+// 						</div>
+// 					)}
+// 				</>
+// 			)}
+// 		</div>
+// 	);
+// };
+
+// export default SpinWheel;
+
 import React, { useState, useEffect } from "react";
 import { Wheel } from "react-custom-roulette";
 
@@ -720,6 +966,7 @@ const SpinWheel = () => {
 	const [loading, setLoading] = useState(false);
 	const [selectedReward, setSelectedReward] = useState(null);
 	const [finalAmount, setFinalAmount] = useState("");
+	const [allRewards, setAllRewards] = useState([]); // full reward objects
 
 	// 💾 Save final amount + reward to backend
 	const handleSave = async () => {
@@ -740,6 +987,7 @@ const SpinWheel = () => {
 			});
 
 			const data = await res.json();
+			console.log("data: ", data);
 			// alert(data.message || "Result saved successfully!");
 			setFinalAmount("");
 		} catch (err) {
@@ -755,13 +1003,18 @@ const SpinWheel = () => {
 			const API_URL = import.meta.env.VITE_API_URL;
 			const response = await fetch(`${API_URL}/rewards?mode=${mode}`);
 			const data = await response.json();
+			console.log("data: ", data);
 
 			// expect: [{ name: "10% OFF" }, { name: "Free 1 Box" }]
+			setAllRewards(data); // keep full reward objects
+
 			setRewards(data.map((r) => r.name));
 			setLoading(false);
 		} catch (err) {
 			console.error("Error fetching rewards:", err);
 			setLoading(false);
+			setRewards([]);
+			setAllRewards([]);
 		}
 	};
 
@@ -769,12 +1022,54 @@ const SpinWheel = () => {
 		fetchRewards();
 	}, [mode]);
 
-	// 🌀 Spin handler
+	// // 🌀 Spin handler
+	// const handleSpin = () => {
+	// 	if (rewards.length === 0) return;
+	// 	// const randomIndex = Math.floor(Math.random() * rewards.length);
+	// 	// setPrizeNumber(randomIndex);
+	// 	// setMustSpin(true);
+	// 	// If any reward has price > 998, only spin from rewards <= 998
+	// 	const expensiveExists = allRewards.some((r) => r.price > 998);
+	// 	let spinPool = allRewards;
+
+	// 	if (expensiveExists) {
+	// 		spinPool = allRewards.filter((r) => r.price <= 998);
+	// 	}
+
+	// 	const randomIndex = Math.floor(Math.random() * spinPool.length);
+	// 	const selected = spinPool[randomIndex];
+
+	// 	setPrizeNumber(randomIndex);
+	// 	setMustSpin(true);
+	// 	setSelectedReward(selected.name);
+	// };
+
 	const handleSpin = () => {
-		if (rewards.length === 0) return alert("No rewards found!");
-		const randomIndex = Math.floor(Math.random() * rewards.length);
-		setPrizeNumber(randomIndex);
+		if (rewards.length === 0) return;
+
+		let spinPool = allRewards;
+
+		// Check if there are any freeGift rewards
+		const hasFreeGifts = allRewards.some((r) => r.rewardType === "freeGift");
+
+		if (hasFreeGifts) {
+			// If freeGifts exist, only spin from those with price < 998
+			spinPool = allRewards.filter(
+				(r) =>
+					r.rewardType === "discount" ||
+					(r.rewardType === "freeGift" && r.price < 998),
+			);
+		}
+
+		const randomIndex = Math.floor(Math.random() * spinPool.length);
+		const selected = spinPool[randomIndex];
+
+		// Find the index in the original allRewards array for the wheel
+		const wheelIndex = allRewards.findIndex((r) => r.name === selected.name);
+
+		setPrizeNumber(wheelIndex);
 		setMustSpin(true);
+		setSelectedReward(selected.name);
 	};
 
 	// 🎁 On stop spinning
@@ -839,7 +1134,7 @@ const SpinWheel = () => {
 						<Wheel
 							mustStartSpinning={mustSpin}
 							prizeNumber={prizeNumber}
-							data={rewards.map((reward) => ({ option: reward }))}
+							data={allRewards.map((reward) => ({ option: reward.name }))}
 							backgroundColors={["#f87171", "#fde047", "#4ade80", "#60a5fa"]}
 							textColors={["#000"]}
 							onStopSpinning={handleStopSpinning}
