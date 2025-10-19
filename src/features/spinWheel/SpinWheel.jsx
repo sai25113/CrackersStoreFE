@@ -971,7 +971,7 @@ const SpinWheel = () => {
 	// 💾 Save final amount + reward to backend
 	const handleSave = async () => {
 		if (!finalAmount || !selectedReward) {
-			alert("Please spin and enter the final amount first!");
+			// alert("Please spin and enter the final amount first!");
 			return;
 		}
 		try {
@@ -991,8 +991,8 @@ const SpinWheel = () => {
 			// alert(data.message || "Result saved successfully!");
 			setFinalAmount("");
 		} catch (err) {
-			console.error("Error saving result:", err);
-			alert("Failed to save result!");
+			console.error("Error saving results:", err);
+			// alert("Failed to save result!");
 		}
 	};
 
