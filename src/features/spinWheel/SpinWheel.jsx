@@ -719,6 +719,34 @@ const SpinWheel = () => {
 	const [prizeNumber, setPrizeNumber] = useState(0);
 	const [loading, setLoading] = useState(false);
 	const [selectedReward, setSelectedReward] = useState(null);
+	const [finalAmount, setFinalAmount] = useState("");
+
+	// 💾 Save final amount + reward to backend
+	const handleSave = async () => {
+		if (!finalAmount || !selectedReward) {
+			alert("Please spin and enter the final amount first!");
+			return;
+		}
+		try {
+			const API_URL = import.meta.env.VITE_API_URL;
+			const res = await fetch(`${API_URL}/saveResult`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					mode,
+					reward: selectedReward,
+					amount: parseFloat(finalAmount),
+				}),
+			});
+
+			const data = await res.json();
+			// alert(data.message || "Result saved successfully!");
+			setFinalAmount("");
+		} catch (err) {
+			console.error("Error saving result:", err);
+			alert("Failed to save result!");
+		}
+	};
 
 	// 🔄 Fetch rewards from backend when mode changes
 	const fetchRewards = async () => {
@@ -834,9 +862,33 @@ const SpinWheel = () => {
 					</Button>
 
 					{/* Show Reward */}
-					{selectedReward && (
-						<div className="mt-3 alert alert-success text-center w-75">
-							You won: <strong>{selectedReward}</strong> 🎉
+					{selectedReward && !mustSpin && (
+						// <div className="mt-3 alert alert-success text-center w-75">
+						// 	You won: <strong>{selectedReward}</strong> 🎉
+						// </div>
+						<div className="mt-4 text-center w-75">
+							<div className="alert alert-success">
+								You won: <strong>{selectedReward}</strong> 🎉
+							</div>
+
+							<Form.Group controlId="finalAmount" className="mt-3">
+								<Form.Label>Enter Final Amount</Form.Label>
+								<Form.Control
+									type="number"
+									placeholder="Enter amount"
+									value={finalAmount}
+									onChange={(e) => setFinalAmount(e.target.value)}
+								/>
+							</Form.Group>
+
+							<Button
+								variant="success"
+								className="mt-3"
+								onClick={handleSave}
+								disabled={!finalAmount}
+							>
+								Save Result
+							</Button>
 						</div>
 					)}
 				</>

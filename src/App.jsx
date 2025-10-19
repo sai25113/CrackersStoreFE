@@ -61,7 +61,7 @@ import SalesHistoryPage from "./features/sales/SalesHistoryPage";
 import SpinWheel from "./features/spinWheel/SpinWheel.jsx";
 import AdminRewards from "./features/spinWheel/AdminRewards";
 import Navbar from "./components/Navbar";
-
+import SalesAnalytics from "./features/spinWheel/SalesAnalytics.jsx";
 // ✅ Put all routing + useLocation logic here
 function AppContent() {
 	const location = useLocation();
@@ -85,6 +85,7 @@ function AppContent() {
 				<Route path="/sales-history" element={<SalesHistoryPage />} />
 				<Route path="/spin-wheel" element={<SpinWheel />} />
 				<Route path="/admin-wheel" element={<AdminRewards />} />
+				<Route path="/analytics" element={<SalesAnalytics />} />
 			</Routes>
 		</>
 	);
