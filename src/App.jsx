@@ -58,7 +58,7 @@ import { store } from "./app/store";
 import StockDashboard from "./features/stocks/StockDashboard";
 import SalesPage from "./features/sales/SalesPage";
 import SalesHistoryPage from "./features/sales/SalesHistoryPage";
-import SpinWheel from "./features/spinWheel/spinWheel";
+import SpinWheel from "./features/spinWheel/SpinWheel.jsx";
 import AdminRewards from "./features/spinWheel/AdminRewards";
 import Navbar from "./components/Navbar";
 
