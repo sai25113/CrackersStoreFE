@@ -1143,6 +1143,13 @@ const SpinWheel = () => {
 							radiusLineColor="#f97316"
 							outerBorderColor="#f97316"
 							outerBorderWidth={8}
+							// Fix text overflow with these props:
+							fontSize={12} // Smaller font size
+							textDistance={70} // Move text closer to center (higher number = closer to center)
+							innerRadius={0.3} // Increase inner radius to make segments narrower
+							innerBorderWidth={3} // Add inner border
+							innerBorderColor="#ffffff" // White inner border
+							radiusLineWidth={2} // Thinner radius lines
 						/>
 					</div>
 
